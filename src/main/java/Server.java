@@ -49,15 +49,18 @@ public class Server {
         }
     }
 
-    private static String execCommand(String command) {
-        String[] commands = command.split(" ");
-        ProcessBuilder process = new ProcessBuilder()
-                .command("/bin/bash", "-c")
-                .command(commands)
+    private static String execCommand(String command) throws IOException {
+//        String[] commands = command.split(" ");
+        ProcessBuilder processBuilder = new ProcessBuilder()
+                .command("/bin/bash", "-c", command)
                 .redirectErrorStream(true);
         StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.start().getInputStream()))) {
-            String line;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(processBuilder.start().getInputStream()))) {
+            String line = reader.readLine();
+            if(line == null){
+                return sb.toString();
+            }
+            sb.append(line).append('\n');
             while ((line = reader.readLine()) != null) {
                 sb.append(line).append('\n');
             }
